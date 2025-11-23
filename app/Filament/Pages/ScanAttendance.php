@@ -6,62 +6,61 @@ use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use App\Models\Student;
 use App\Models\Attendance;
+use Illuminate\Support\Facades\Log; // Tambahkan ini untuk cek log
 
 class ScanAttendance extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-qr-code';
-    
     protected static ?string $navigationLabel = 'Scan Absensi';
-
     protected static string $view = 'filament.pages.scan-attendance';
+
+    public $nisn_input = '';
+    
+    // Variabel Modal
+    public $is_modal_open = false;
+    public $scanned_data = [];
 
     public static function canAccess(): bool
     {
         return in_array(auth()->user()->role, ['admin', 'teacher']);
     }
 
-    // Variabel ini akan diisi otomatis oleh JavaScript Kamera
-    public $nisn_input = '';
-
-    public function save()
+    // Fungsi Save menerima parameter QR
+    public function save($qrCode = null)
     {
-        // Validasi: Jika input kosong, stop
-        if (empty($this->nisn_input)) {
+        // LOGGING: Cek di storage/logs/laravel.log
+        Log::info("Menerima data QR: " . $qrCode);
+
+        $nisn = $qrCode ?? $this->nisn_input;
+
+        if (empty($nisn)) {
             return;
         }
 
-        // 1. Cari Siswa
-        $student = Student::where('nisn', $this->nisn_input)->first();
+        $this->nisn_input = $nisn;
+        
+        $student = Student::where('nisn', $nisn)->first();
 
         if (!$student) {
-            Notification::make()
-                ->title('Gagal')
-                ->body("NISN {$this->nisn_input} tidak ditemukan.")
-                ->danger()
-                ->send();
-            
-            // Reset input
-            $this->nisn_input = ''; 
+            $this->openModal('error', 'Gagal', "NISN {$nisn} tidak ditemukan.", 'bg-red-100 text-red-800');
             return;
         }
 
-        // 2. Cek Duplikasi Absen Hari Ini
         $alreadyPresent = Attendance::where('student_id', $student->id)
             ->whereDate('date', now())
             ->exists();
 
         if ($alreadyPresent) {
-            Notification::make()
-                ->title('Sudah Absen')
-                ->body("{$student->name} sudah absen hari ini.")
-                ->warning()
-                ->send();
-                
-            $this->nisn_input = '';
+            $this->openModal(
+                'warning', 
+                'Sudah Absen', 
+                'Siswa ini sudah absen hari ini.', 
+                'bg-yellow-100 text-yellow-800',
+                $student
+            );
             return;
         }
 
-        // 3. Simpan Absen
         Attendance::create([
             'student_id' => $student->id,
             'date' => now(),
@@ -69,14 +68,35 @@ class ScanAttendance extends Page
             'status' => 'Hadir',
         ]);
 
-        // 4. Notifikasi Sukses
-        Notification::make()
-            ->title('Berhasil Hadir')
-            ->body("Selamat datang, {$student->name}.")
-            ->success()
-            ->send();
+        $this->openModal(
+            'success', 
+            'Berhasil Hadir', 
+            'Absensi berhasil dicatat.', 
+            'bg-green-100 text-green-800',
+            $student
+        );
+    }
 
-        // Reset input untuk scan berikutnya
+    // Helper untuk buka modal agar kodingan rapi
+    public function openModal($status, $title, $message, $color, $student = null)
+    {
+        $this->scanned_data = [
+            'status' => $status,
+            'title' => $title,
+            'message' => $message,
+            'color' => $color,
+            'name' => $student ? $student->name : null,
+            'class' => $student ? ($student->schoolClass->name ?? '-') : null,
+            'time' => now()->format('H:i'),
+        ];
+        $this->is_modal_open = true;
+    }
+
+    public function resetScan()
+    {
+        $this->is_modal_open = false;
         $this->nisn_input = '';
+        // Kita kirim event ke JS untuk mulai scan lagi
+        $this->dispatch('resume-camera'); 
     }
 }
