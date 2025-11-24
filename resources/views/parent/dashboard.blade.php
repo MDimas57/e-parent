@@ -50,7 +50,7 @@
             color: var(--primary);
             line-height: 1;
         }
-        
+
         .brand-text span {
             font-size: 14px;
             color: var(--text-gray);
@@ -165,7 +165,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .card-title {
             font-size: 18px;
             font-weight: 700;
@@ -199,6 +199,26 @@
             border-radius: 4px 4px 0 0;
             opacity: 0.8;
             transition: height 1s;
+        }
+
+        /* Wrapper for each bar so we can place a value label above it */
+        .bar-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end; /* keep bar anchored to bottom */
+            height: 100%;
+            gap: 6px;
+        }
+
+        .chart-value {
+            font-size: 12px;
+            color: var(--text-dark);
+            background: rgba(255,255,255,0.9);
+            padding: 2px 6px;
+            border-radius: 6px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+            white-space: nowrap;
         }
 
         /* Tabel Sederhana di Kanan */
@@ -241,7 +261,7 @@
     <div class="container">
 
         <div class="stats-grid">
-            
+
             <div class="stat-card">
                 <div class="icon-box">👤</div>
                 <div class="stat-info">
@@ -288,25 +308,81 @@
         </div>
 
         <div class="main-grid">
-            
+
             <div class="content-card">
                 <div class="card-header">
                     <h3 class="card-title">Grafik Perkembangan Nilai</h3>
-                    <span style="font-size: 12px; color: gray;">● Nilai per Mapel</span>
+                    <span style="font-size: 12px; color: gray;">● Nilai per Semester</span>
                 </div>
-                
-                <div class="chart-placeholder">
-                    <div class="chart-bar" style="height: 40%;" title="Tugas 1"></div>
-                    <div class="chart-bar" style="height: 60%;" title="Tugas 2"></div>
-                    <div class="chart-bar" style="height: 85%;" title="UTS"></div>
-                    <div class="chart-bar" style="height: 70%;" title="UAS"></div>
-                </div>
-                <div style="display: flex; justify-content: space-around; font-size: 12px; color: gray; margin-top: 10px;">
-                    <span>Tugas 1</span>
-                    <span>Tugas 2</span>
-                    <span>UTS</span>
-                    <span>UAS</span>
-                </div>
+
+                @php
+                    use App\Models\Grade;
+
+                    $grades = collect();
+                    try {
+                        // NOTE: In the current DB `grades.subject` may contain semester labels
+                        // (e.g. "Semester 1"). The table has no `semester` column, so group
+                        // by `subject` and treat subject values that start with "Semester "
+                        // as semester buckets. Order semester-like subjects numerically,
+                        // and put other subjects after.
+                        $grades = Grade::where('student_id', $student->id)
+                            ->selectRaw("subject as semester, AVG(score) as avg_score")
+                            ->groupBy('subject')
+                            ->orderByRaw("CASE WHEN subject LIKE 'Semester %' THEN CAST(SUBSTRING(subject, 10) AS UNSIGNED) ELSE 999 END, subject")
+                            ->get();
+                    } catch (\Throwable $e) {
+                        $grades = collect();
+                    }
+                @endphp
+
+                @if($grades->isEmpty())
+                    <div style="padding:16px; color:gray; font-size:13px;">Belum ada data nilai untuk ditampilkan.</div>
+
+                    <div class="chart-placeholder" aria-hidden="true">
+                        <div class="bar-wrap">
+                            <div class="chart-value">10</div>
+                            <div class="chart-bar" style="height: 10%;" title="Semester 1"></div>
+                        </div>
+                        <div class="bar-wrap">
+                            <div class="chart-value">10</div>
+                            <div class="chart-bar" style="height: 10%;" title="Semester 2"></div>
+                        </div>
+                        <div class="bar-wrap">
+                            <div class="chart-value">10</div>
+                            <div class="chart-bar" style="height: 10%;" title="Semester 3"></div>
+                        </div>
+                        <div class="bar-wrap">
+                            <div class="chart-value">10</div>
+                            <div class="chart-bar" style="height: 10%;" title="Semester 4"></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-around; font-size: 12px; color: gray; margin-top: 10px;">
+                        <span>Semester 1</span>
+                        <span>Semester 2</span>
+                        <span>Semester 3</span>
+                        <span>Semester 4</span>
+                    </div>
+                @else
+                    <div class="chart-placeholder">
+                        @foreach($grades as $grade)
+                            @php
+                                // Pastikan rentang 0-100 untuk tinggi bar
+                                $avg = round($grade->avg_score, 1);
+                                $height = min(max($avg, 0), 100);
+                            @endphp
+                            <div class="bar-wrap">
+                                <div class="chart-value">{{ $avg }}</div>
+                                <div class="chart-bar" style="height: {{ $height }}%;" title="Semester {{ $grade->semester }} — {{ $avg }}"></div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div style="display: flex; justify-content: space-around; font-size: 12px; color: gray; margin-top: 10px;">
+                        @foreach($grades as $grade)
+                            <span>Semester {{ $grade->semester }}</span>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <div class="content-card">
@@ -319,38 +395,63 @@
                     <p style="font-size: 12px; color: #166534; margin-top: 5px;">Siswa terdaftar aktif pada semester ini.</p>
                 </div>
 
-                <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-dark);">Riwayat Nilai Terakhir</h4>
-                <table class="simple-table">
-                    <thead>
-                        <tr>
-                            <th>Mapel</th>
-                            <th>Nilai</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($student->grades()->latest()->take(3)->get() as $grade)
-                        <tr>
-                            <td>{{ $grade->subject }}</td>
-                            <td style="font-weight: bold;">{{ $grade->score }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="2" style="text-align: center; color: gray;">Belum ada data nilai</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--text-dark);">Pesan dari Wali Kelas</h4>
+
+                @php
+                    use Carbon\Carbon;
+                    // NOTE: the messages table (migration) stores sender_id, receiver_id and content.
+                    // The previous view code attempted to query by `school_class_id` / `teacher_id` which
+                    // do not exist on this table. Here we fetch messages sent by the teacher (as a User)
+                    // to the currently authenticated parent (receiver).
+                    $messages = collect();
+
+                    $teacherUserId = optional(optional($student->schoolClass)->teacher)->user_id ?? null;
+                    $parentUserId = auth()->id();
+
+                    if ($teacherUserId && $parentUserId) {
+                        try {
+                            $messages = \App\Models\Message::where('sender_id', $teacherUserId)
+                                ->where('receiver_id', $parentUserId)
+                                ->orderBy('created_at', 'desc')
+                                ->limit(5)
+                                ->get();
+                        } catch (\Throwable $e) {
+                            $messages = collect();
+                        }
+                    }
+                @endphp
+
+                @if($messages->isEmpty())
+                    <div style="padding:12px; color:gray; font-size:13px;">Belum ada pesan dari wali kelas.</div>
+                @else
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        @foreach($messages as $message)
+                            <li style="padding:10px 0; border-bottom:1px solid #f3f4f6;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div style="font-size:12px; color:var(--text-gray);">
+                                        @php $created = $message->created_at ?? null; @endphp
+                                        {{ $created ? Carbon::parse($created)->format('d M Y H:i') : '' }}
+                                    </div>
+                                </div>
+                                <div style="margin-top:6px; font-size:13px; color:#374151;">
+                                    {{-- The messages table uses `content` for the message body --}}
+                                    {{ $message->content ?? '-' }}
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
 
                <div style="margin-top: 20px;">
                     <p style="font-size: 12px; color: gray;">Wali Kelas</p>
-                    
+
                     <p style="font-weight: bold; font-size: 14px;">
                         {{ $student->schoolClass->teacher->name ?? 'Belum ditentukan' }}
                     </p>
 
                     @php
                         // Cek apakah data guru ada dan punya nomor HP
-                        $teacherPhone = $student->schoolClass->teacher->phone ?? null; 
+                        $teacherPhone = $student->schoolClass->teacher->phone ?? null;
                     @endphp
 
                     @if($teacherPhone)
