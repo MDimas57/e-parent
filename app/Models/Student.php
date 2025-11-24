@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon; 
 
 class Student extends Model
 {
@@ -20,11 +21,19 @@ class Student extends Model
         static::creating(function ($student) {
             // Hanya buat user jika user_id belum diisi
             if (empty($student->user_id)) {
+                
+                // PERBAIKAN DI SINI: Menggunakan 'birthday' sesuai migration Anda
+                // Format password: dmY (Contoh: 25052010)
+                $passwordDefault = $student->birthday 
+                    ? Carbon::parse($student->birthday)->format('dmY') 
+                    : '12345678'; // Password cadangan jika tgl lahir kosong
+
                 $user = User::create([
                     'name' => 'Wali Murid ' . $student->name,
                     // Email otomatis: nisn@orangtua.id
                     'email' => $student->nisn . '@orangtua.id', 
-                    'password' => Hash::make('password123'),
+                    // Password otomatis dari tanggal lahir
+                    'password' => Hash::make($passwordDefault),
                     'role' => 'parent',
                 ]);
 
@@ -32,34 +41,35 @@ class Student extends Model
             }
         });
 
-        // Opsional: Update nama Wali Murid jika nama siswa diedit
+        // Update nama user jika nama siswa diedit
         static::updating(function ($student) {
             if ($student->user && $student->isDirty('name')) {
                 $student->user->update(['name' => 'Wali Murid ' . $student->name]);
+            }
+            
+            // Update email login jika NISN diedit
+            if ($student->user && $student->isDirty('nisn')) {
+                $student->user->update(['email' => $student->nisn . '@orangtua.id']);
             }
         });
     }
     // -------------------------------------------
 
-    // Relasi ke Kelas
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class);
     }
 
-    // Relasi ke Akun Orang Tua
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke Absensi (PENTING: Jangan dihapus agar fitur Scan QR jalan)
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
     }
 
-    // Relasi ke Nilai (PENTING: Agar fitur Nilai jalan)
     public function grades(): HasMany
     {
         return $this->hasMany(Grade::class);
