@@ -341,18 +341,31 @@
                     </tbody>
                 </table>
 
-                <div style="margin-top: 20px;">
+               <div style="margin-top: 20px;">
                     <p style="font-size: 12px; color: gray;">Wali Kelas</p>
-                    <p style="font-weight: bold; font-size: 14px;">Bpk. Guru Pengajar</p>
-                    <button style="width: 100%; margin-top: 10px; padding: 8px; background: #25d366; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                        WhatsApp Wali Kelas
-                    </button>
+                    
+                    <p style="font-weight: bold; font-size: 14px;">
+                        {{ $student->schoolClass->teacher->name ?? 'Belum ditentukan' }}
+                    </p>
+
+                    @php
+                        // Cek apakah data guru ada dan punya nomor HP
+                        $teacherPhone = $student->schoolClass->teacher->phone ?? null; 
+                    @endphp
+
+                    @if($teacherPhone)
+                        <a href="https://wa.me/{{ $teacherPhone }}" target="_blank" style="text-decoration: none;">
+                            <button style="width: 100%; margin-top: 10px; padding: 8px; background: #25d366; color: white; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <span style="font-size: 16px;">💬</span> WhatsApp Wali Kelas
+                            </button>
+                        </a>
+                    @else
+                        <button disabled style="width: 100%; margin-top: 10px; padding: 8px; background: #d1d5db; color: #6b7280; border: none; border-radius: 6px; cursor: not-allowed;">
+                            WhatsApp Tidak Tersedia
+                        </button>
+                    @endif
                 </div>
-            </div>
 
-        </div>
-
-    </div>
-
-</body>
+            </div> </div> </div> </body>
 </html>
+

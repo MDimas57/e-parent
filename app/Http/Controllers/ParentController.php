@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class ParentController extends Controller
 {
+    // ... (fungsi showLoginForm dan login biarkan tetap sama) ...
     public function showLoginForm()
     {
         if (Auth::check() && Auth::user()->role === 'parent') {
@@ -19,16 +20,13 @@ class ParentController extends Controller
 
     public function login(Request $request)
     {
-        // 1. Validasi input NISN (bukan email)
         $request->validate([
-            'nisn'     => 'required|numeric', // Inputnya berupa angka
+            'nisn'     => 'required|numeric',
             'password' => 'required',
         ]);
 
-        // 2. Manipulasi: Gabungkan NISN dengan domain palsu agar cocok dengan database
         $emailFormat = $request->nisn . '@orangtua.id';
 
-        // 3. Coba Login
         if (Auth::attempt(['email' => $emailFormat, 'password' => $request->password])) {
             $request->session()->regenerate();
 
@@ -40,17 +38,21 @@ class ParentController extends Controller
             return redirect()->intended(route('parent.dashboard'));
         }
 
-        // Jika Gagal
         return back()->withErrors([
             'nisn' => 'NISN atau Password (Tanggal Lahir) salah.',
         ]);
     }
 
-    // ... (Fungsi dashboard & logout tetap sama seperti sebelumnya)
+    // --- BAGIAN YANG DIUBAH ADA DI SINI ---
     public function dashboard()
     {
         $user = Auth::user();
-        $student = Student::with(['schoolClass'])->where('user_id', $user->id)->first();
+        
+        // Perhatikan bagian 'schoolClass.teacher'
+        // Ini artinya: Ambil Student -> Ambil Kelasnya -> Ambil Guru (Teacher) dari kelas itu
+        $student = Student::with(['schoolClass.teacher']) 
+                          ->where('user_id', $user->id)
+                          ->first();
 
         if (!$student) return abort(404, 'Data siswa tidak ditemukan.');
 
