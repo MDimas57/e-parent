@@ -61,18 +61,32 @@ class ScanAttendance extends Page
             return;
         }
 
+// --- LOGIKA CEK TERLAMBAT ---
+        $setting = \App\Models\SchoolSetting::first();
+        
+        // Ambil Jam Masuk dari setting, default 07:00 jika belum diset
+        $jamMasuk = $setting ? $setting->start_time : '07:00:00';
+        
+        // Cek apakah Jam Sekarang > Jam Masuk?
+        $statusKehadiran = now()->format('H:i:s') > $jamMasuk ? 'Terlambat' : 'Hadir';
+        // -----------------------------
+
         Attendance::create([
             'student_id' => $student->id,
             'date' => now(),
             'time' => now(),
-            'status' => 'Hadir',
+            'status' => $statusKehadiran, // Gunakan status dinamis
         ]);
+
+        // Tentukan warna dan pesan modal berdasarkan status
+        $modalTitle = $statusKehadiran == 'Terlambat' ? 'Hadir (Terlambat)' : 'Berhasil Hadir';
+        $modalColor = $statusKehadiran == 'Terlambat' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800';
 
         $this->openModal(
             'success', 
-            'Berhasil Hadir', 
+            $modalTitle, 
             'Absensi berhasil dicatat.', 
-            'bg-green-100 text-green-800',
+            $modalColor,
             $student
         );
     }

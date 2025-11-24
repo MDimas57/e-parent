@@ -18,6 +18,12 @@ class UserResource extends Resource
 
     protected static ?string $navigationLabel = 'Manajemen User';
 
+     public static function canViewAny(): bool
+    {
+        // Hanya admin yang boleh lihat
+        return auth()->user()->role === 'admin';
+    }
+
     // Agar menu ini muncul paling bawah
     protected static ?int $navigationSort = 99; 
 

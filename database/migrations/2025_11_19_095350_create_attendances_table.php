@@ -9,17 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-{
-    Schema::create('attendances', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-        $table->date('date');
-        $table->time('time'); // Waktu scan
-        $table->enum('status', ['Hadir', 'Sakit', 'Izin', 'Alpha'])->default('Hadir');
-        $table->timestamps();
-    });
-}
+public function up(): void
+    {
+        Schema::create('attendances', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+            $table->date('date');
+            $table->time('time'); 
+            
+            // --- PERBAIKAN DI SINI ---
+            // Ubah dari ENUM ke STRING agar bisa menampung 'Terlambat'
+            $table->string('status')->default('Hadir'); 
+            // -------------------------
+
+            $table->timestamps();
+        });
+    }
     /**
      * Reverse the migrations.
      */

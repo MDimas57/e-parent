@@ -44,10 +44,12 @@ class AttendanceTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Hadir' => 'success',
-                        'Izin' => 'warning',
+                        'Hadir' => 'success',      // Hijau
+                        'Terlambat' => 'warning',  // Oranye (BARU)
+                        'Izin' => 'info',          // Biru
                         'Sakit' => 'info',
-                        'Alpha' => 'danger',
+                        'Alpha' => 'danger',       // Merah
+                        default => 'gray',
                     }),
             ])
             ->filters([

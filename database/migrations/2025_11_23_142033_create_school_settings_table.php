@@ -9,10 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+  public function up(): void
     {
         Schema::create('school_settings', function (Blueprint $table) {
             $table->id();
+            $table->time('start_time')->default('07:00:00'); // Jam Masuk
+            $table->time('end_time')->default('14:00:00');   // Jam Pulang
             $table->timestamps();
         });
     }
