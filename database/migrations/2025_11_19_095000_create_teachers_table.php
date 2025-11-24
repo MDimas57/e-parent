@@ -9,17 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-{
-    Schema::create('teachers', function (Blueprint $table) {
-        $table->id();
-        // Relasi ke tabel users (untuk login)
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
-        $table->string('nip')->unique();
-        $table->string('name');
-        $table->timestamps();
-    });
-}
+public function up(): void
+    {
+        Schema::create('teachers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->string('nip')->unique();
+            $table->string('name');
+            
+            // --- HANYA PHONE ---
+            $table->string('phone')->nullable();   // Nomor Telepon
+            // -------------------
+
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

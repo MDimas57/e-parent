@@ -25,7 +25,12 @@ class TeachersTable
                     ->searchable()
                     ->sortable(),
 
-                // Logika Badge Wali Kelas sesuai permintaan Anda
+                // --- PHONE SAJA ---
+                TextColumn::make('phone')
+                    ->label('No. HP')
+                    ->icon('heroicon-m-phone'),
+                // ------------------
+
                 TextColumn::make('schoolClass.name') 
                     ->label('Wali Kelas')
                     ->badge()
@@ -35,12 +40,10 @@ class TeachersTable
             ->filters([
                 //
             ])
-   
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-   
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

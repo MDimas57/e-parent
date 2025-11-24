@@ -20,22 +20,27 @@ class GradeForm
                     ->preload()
                     ->required(),
 
-                TextInput::make('subject')
-                    ->label('Mata Pelajaran')
-                    ->placeholder('Contoh: Matematika / Rata-rata')
+                // --- PERUBAHAN DI SINI ---
+                // Mengubah input teks biasa menjadi Dropdown Semester
+                // Kita tetap gunakan kolom database 'subject' agar tidak perlu migrasi ulang
+                Select::make('subject')
+                    ->label('Semester')
+                    ->options([
+                        'Semester 1' => 'Semester 1',
+                        'Semester 2' => 'Semester 2',
+                        'Semester 3' => 'Semester 3',
+                        'Semester 4' => 'Semester 4',
+                        'Semester 5' => 'Semester 5',
+                    ])
                     ->required(),
+                // -------------------------
 
                 TextInput::make('score')
-                    ->label('Nilai (Angka)')
+                    ->label('Nilai Rata-rata')
                     ->numeric()
                     ->maxValue(100)
                     ->minValue(0)
                     ->required(),
-
-                Textarea::make('description')
-                    ->label('Catatan Guru')
-                    ->rows(3)
-                    ->columnSpanFull(),
             ]);
     }
 }
