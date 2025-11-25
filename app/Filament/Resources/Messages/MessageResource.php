@@ -23,6 +23,11 @@ class MessageResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->role === 'teacher' ;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

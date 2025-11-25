@@ -22,7 +22,7 @@ class StudentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $navigationLabel = 'Data Siswa';
-
+    protected static ?string $navigationGroup = 'Data Sekolah';
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getEloquentQuery(): Builder

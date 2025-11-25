@@ -18,7 +18,7 @@ class GradeResource extends Resource
 
     // Gunakan string biasa agar aman dan tidak error tipe data
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
-
+    protected static ?string $navigationGroup = 'Absensi & Laporan';
     protected static ?string $navigationLabel = 'Nilai Siswa';
 
     // PERBAIKAN 1: Gunakan (Form $form): Form

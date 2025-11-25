@@ -17,8 +17,8 @@ class AttendanceResource extends Resource
     protected static ?string $model = Attendance::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-
-    protected static ?string $navigationLabel = 'Absensi';
+    protected static ?string $navigationGroup = 'Absensi & Laporan';
+    protected static ?string $navigationLabel = 'Laporan Absensi';
 
     // LOGIKA PEMBATASAN DATA (QUERY SCOPE)
     public static function getEloquentQuery(): Builder

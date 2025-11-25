@@ -18,7 +18,7 @@ class TeacherResource extends Resource
 
     // PERBAIKAN 1: Gunakan ?string dan nama icon biasa (V3 Style)
     protected static ?string $navigationIcon = 'heroicon-o-user';
-
+    protected static ?string $navigationGroup = 'Data Sekolah';
     protected static ?string $navigationLabel = 'Data Guru';
 
     protected static ?string $recordTitleAttribute = 'name';

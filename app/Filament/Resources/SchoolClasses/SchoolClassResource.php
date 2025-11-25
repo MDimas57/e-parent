@@ -18,7 +18,7 @@ class SchoolClassResource extends Resource
 
     // PERBAIKAN 1: Ubah tipe jadi ?string dan gunakan string icon biasa
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationGroup = 'Data Sekolah';
     // PERBAIKAN 2: Tambahkan Label Navigasi (Opsional, biar rapi)
     protected static ?string $navigationLabel = 'Data Kelas';
 
