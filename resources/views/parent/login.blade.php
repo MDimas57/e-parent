@@ -220,7 +220,9 @@
     </div>
 
     <div class="footer-copyright">
-        &copy; 2025, Tim IT - SMP Negeri 1 Menggala. All rights reserved.
+        <small style="color:#90a4ae; font-size:12px;">
+            &copy; {{ date('Y') }}, Tim IT - SMP Negeri 1 Menggala. All rights reserved.
+        </small>
     </div>
 
 </body>

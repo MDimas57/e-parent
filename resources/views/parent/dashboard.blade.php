@@ -268,6 +268,26 @@
                 padding: 15px 20px;
             }
         }
+
+        /* Footer copyright (match login.blade.php) */
+        .footer-copyright {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            font-size: 12px;
+            color: #90a4ae;
+        }
+
+        /* Responsif kecil */
+        @media (max-width: 480px) {
+            .footer-copyright {
+                bottom: 15px;
+                left: 15px;
+                text-align: center;
+                width: 100%;
+                left: 0;
+            }
+        }
     </style>
 </head>
 
@@ -281,6 +301,22 @@
             <div class="brand-text">
                 <h1>DIGITAL PARENT</h1>
                 <span>Sistem Monitoring Siswa Terpadu</span>
+                <div style="margin-top:8px;">
+                    {{-- Background diubah menjadi merah (#ef4444) --}}
+                    <div
+                        style="display:flex; align-items:center; gap:12px; background:#ef4444; padding:8px 12px; border-radius:10px; box-shadow:var(--shadow);">
+                        <div style="display:flex; flex-direction:column; line-height:1;">
+                            {{-- Warna teks diubah menjadi white agar terbaca di background merah --}}
+                            <div style="font-size:13px; font-weight:700; color:white;">SMP Negeri 1 Menggala</div>
+                        </div>
+                        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                            {{-- Badge disesuaikan: Background putih, Teks merah --}}
+                            <div
+                                style="background:white; color:#ef4444; padding:6px 8px; border-radius:999px; font-size:11px; font-weight:700;">
+                                Online</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -410,7 +446,9 @@
                 @else
                     <div style="display: flex; gap: 10px;">
 
-                        <div style="display: flex; flex-direction: column; justify-content: space-between; height: 300px; text-align: right; min-width: 25px; color: #9ca3af; font-size: 11px; font-weight: 500; padding-bottom: 0px;">
+                        <div
+                            style="display: flex; flex-direction: column; justify-content: space-between; height: 300px; text-align: right; min-width: 25px; color: #9ca3af; font-size: 11px; font-weight: 500; padding-bottom: 0px;">
+                            <span style="transform: translateY(-50%);">120</span>
                             <span style="transform: translateY(-50%);">100</span>
                             <span style="transform: translateY(-50%);">80</span>
                             <span style="transform: translateY(-50%);">60</span>
@@ -422,21 +460,26 @@
                         <div style="flex: 1; display: flex; flex-direction: column;">
 
                             <div class="chart-placeholder"
-                                style="position: relative; width: 100%; height: 300px; background: repeating-linear-gradient(0deg, transparent, transparent 59px, #e5e7eb 60px); border-top: 1px dashed #e5e7eb; display: flex; align-items: flex-end; justify-content: space-around;">
+                                style="position: relative; width: 100%; height: 300px; background: repeating-linear-gradient(0deg, transparent, transparent 49px, #e5e7eb 50px); border-top: 1px dashed #e5e7eb; display: flex; align-items: flex-end; justify-content: space-around;">
 
                                 {{-- LOGIKA UNTUK GARIS (TREND LINE) --}}
                                 @php
                                     $count = $grades->count();
-                                    $polylinePoints = "";
+                                    $polylinePoints = '';
                                     $circles = [];
+                                    $maxScale = 120; // Skala maksimal baru
 
                                     foreach ($grades as $index => $grade) {
                                         $avg = round($grade->avg_score, 1);
-                                        $h = min(max($avg, 0), 100);
 
-                                        // Hitung posisi X dan Y dalam Persentase
+                                        // Hitung tinggi dalam PERSEN berdasarkan skala 120
+                                        // Rumus: (Nilai / 120) * 100
+                                        $percentHeight = ($avg / $maxScale) * 100;
+                                        $h = min(max($percentHeight, 0), 100);
+
+                                        // Hitung posisi X dan Y untuk SVG
                                         $posX = (($index * 2 + 1) / ($count * 2)) * 100;
-                                        $posY = 100 - $h;
+                                        $posY = 100 - $h; // Y di SVG dari atas ke bawah
 
                                         $polylinePoints .= "{$posX},{$posY} ";
                                         $circles[] = ['x' => $posX, 'y' => $posY];
@@ -444,24 +487,24 @@
                                 @endphp
 
                                 {{-- SVG Overlay untuk Garis --}}
-                                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;" preserveAspectRatio="none" viewBox="0 0 100 100">
-                                    {{-- stroke-dasharray dihapus agar garis menjadi utuh (solid) --}}
-                                    <polyline points="{{ $polylinePoints }}"
-                                              fill="none"
-                                              stroke="#3b82f6"
-                                              stroke-width="2"
-                                              vector-effect="non-scaling-stroke" />
+                                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"
+                                    preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    <polyline points="{{ $polylinePoints }}" fill="none" stroke="#3b82f6"
+                                        stroke-width="2" vector-effect="non-scaling-stroke" />
 
-                                    @foreach($circles as $circle)
-                                        <circle cx="{{ $circle['x'] }}" cy="{{ $circle['y'] }}" r="0.6" fill="#3b82f6" stroke="none" />
+                                    @foreach ($circles as $circle)
+                                        <circle cx="{{ $circle['x'] }}" cy="{{ $circle['y'] }}" r="0.6"
+                                            fill="#3b82f6" stroke="none" />
                                     @endforeach
                                 </svg>
 
-                                {{-- BATANG GRAFIK (Eksisting) --}}
+                                {{-- BATANG GRAFIK --}}
                                 @foreach ($grades as $grade)
                                     @php
                                         $avg = round($grade->avg_score, 1);
-                                        $height = min(max($avg, 0), 100);
+                                        // Hitung tinggi batang berdasarkan skala 120
+                                        $percentHeight = ($avg / $maxScale) * 100;
+                                        $height = min(max($percentHeight, 0), 100);
                                     @endphp
                                     <div class="bar-wrap" style="z-index: 5;">
                                         <div class="chart-value" style="font-weight: bold; color: var(--primary);">
@@ -473,7 +516,8 @@
                                 @endforeach
                             </div>
 
-                            <div style="display: flex; justify-content: space-around; font-size: 12px; color: #4b5563; margin-top: 10px; font-weight: 500;">
+                            <div
+                                style="display: flex; justify-content: space-around; font-size: 12px; color: #4b5563; margin-top: 10px; font-weight: 500;">
                                 @foreach ($grades as $grade)
                                     <div style="width: 40px; text-align: center;">
                                         {{ $grade->semester }}
@@ -600,6 +644,10 @@
 
             </div>
         </div>
+    </div>
+
+    <div class="footer-copyright">
+        &copy; 2025, Tim IT - SMP Negeri 1 Menggala. All rights reserved.
     </div>
 </body>
 
