@@ -12,10 +12,12 @@
             /* Abu-abu terang */
             --bg-card: #ffffff;
             /* Putih */
-            --primary: #ef4444;
-            /* Merah */
+            --primary: #f59e0b; /* Oranye/emas sesuai gambar */
+            --primary-dark: #d97706; /* Varian gelap untuk hover/aksen */
+            --danger: #d24900; /* Pengganti merah untuk status 'danger' */
             --text-dark: #1f2937;
             /* Hitam */
+            --online: #16a34a; /* Warna hijau untuk status Online */
             --text-gray: #6b7280;
             /* Abu-abu */
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -83,7 +85,7 @@
         }
 
         .btn-logout:hover {
-            background-color: #dc2626;
+            background-color: var(--primary-dark);
         }
 
         /* --- 3. CONTAINER --- */
@@ -154,7 +156,7 @@
         }
 
         .text-danger {
-            color: #dc2626;
+            color: var(--danger);
         }
 
         .text-success {
@@ -271,21 +273,19 @@
 
         /* Footer copyright (match login.blade.php) */
         .footer-copyright {
-            position: absolute;
-            bottom: 20px;
-            left: 30px;
+            position: relative;
+            margin-top: auto;
+            padding: 20px 30px;
             font-size: 12px;
             color: #90a4ae;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
         }
 
         /* Responsif kecil */
         @media (max-width: 480px) {
             .footer-copyright {
-                bottom: 15px;
-                left: 15px;
-                text-align: center;
-                width: 100%;
-                left: 0;
+                padding: 15px;
             }
         }
     </style>
@@ -302,17 +302,17 @@
                 <h1>DIGITAL PARENT</h1>
                 <span>Sistem Monitoring Siswa Terpadu</span>
                 <div style="margin-top:8px;">
-                    {{-- Background diubah menjadi merah (#ef4444) --}}
+                    {{-- Background diubah menjadi warna utama --}}
                     <div
-                        style="display:flex; align-items:center; gap:12px; background:#ef4444; padding:8px 12px; border-radius:10px; box-shadow:var(--shadow);">
+                        style="display:flex; align-items:center; gap:12px; background:var(--primary); padding:8px 12px; border-radius:10px; box-shadow:var(--shadow);">
                         <div style="display:flex; flex-direction:column; line-height:1;">
                             {{-- Warna teks diubah menjadi white agar terbaca di background merah --}}
                             <div style="font-size:13px; font-weight:700; color:white;">SMP Negeri 1 Menggala</div>
                         </div>
                         <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-                            {{-- Badge disesuaikan: Background putih, Teks merah --}}
+                            {{-- Badge disesuaikan: Background putih, Teks warna utama --}}
                             <div
-                                style="background:white; color:#ef4444; padding:6px 8px; border-radius:999px; font-size:11px; font-weight:700;">
+                                style="background:white; color:var(--online); padding:6px 8px; border-radius:999px; font-size:11px; font-weight:700;">
                                 Online</div>
                         </div>
                     </div>
