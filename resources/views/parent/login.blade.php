@@ -233,10 +233,68 @@
             text-align: center;
         }
 
-        /* Responsif untuk HP */
+        /* Responsif untuk tablet dan HP (header tetap di kiri) */
+        @media (max-width: 900px) {
+            .header-logo {
+                top: 14px;
+                left: 30px;
+                transform: none;
+                gap: 12px;
+            }
+            .header-logo img {
+                height: 60px;
+            }
+            .logo-text h1 {
+                font-size: 20px;
+            }
+            .login-card {
+                max-width: 92%;
+                padding: 48px 22px 32px;
+                margin-top: 48px;
+                margin-left: 30px;
+                margin-right: 30px;
+            }
+            .floating-icon {
+                width: 64px;
+                height: 64px;
+                top: -32px;
+                font-size: 28px;
+            }
+        }
+
         @media (max-width: 480px) {
-            .header-logo { top: 15px; left: 15px; }
-            .footer-copyright { bottom: 15px; left: 50%; transform: translateX(-50%); }
+            .header-logo {
+                top: 12px;
+                left: 15px;
+                transform: none;
+                gap: 8px;
+            }
+            .header-logo img {
+                height: 56px;
+            }
+            .logo-text h1 {
+                font-size: 18px;
+            }
+            .logo-text .subtitle { font-size: 12px; }
+            .login-card {
+                max-width: 95%;
+                padding: 40px 18px 28px;
+                margin-top: 56px;
+                border-radius: 10px;
+                margin-left: 16px;
+                margin-right: 16px;
+            }
+            .floating-icon {
+                width: 56px;
+                height: 56px;
+                top: -28px;
+                font-size: 26px;
+            }
+            .login-title { font-size: 20px; }
+            .login-subtitle { font-size: 12px; margin-bottom: 18px; }
+            .form-control { padding: 12px 14px; font-size: 14px; }
+            .btn-submit { padding: 12px; font-size: 14px; }
+            .footer-copyright { bottom: 10px; font-size: 12px; }
         }
     </style>
 </head>
