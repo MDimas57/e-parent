@@ -332,10 +332,27 @@
             </div>
             <div class="stat-card">
                 <div class="icon-box">📅</div>
+                @php
+                    use App\Models\SchoolSetting;
+                    $academicYear = null;
+                    try {
+                        $setting = SchoolSetting::latest('id')->first();
+                        if ($setting) {
+                            $academicYear = $setting->academic_year
+                                ?? $setting->school_year
+                                ?? $setting->tahun_ajaran
+                                ?? (isset($setting->start_year, $setting->end_year) ? $setting->start_year . '/' . $setting->end_year : null)
+                                ?? ($setting->year ?? null);
+                        }
+                    } catch (\Throwable $e) {
+                        $academicYear = null;
+                    }
+                @endphp
+
                 <div class="stat-info">
                     <div class="stat-label">Kelas</div>
                     <div class="stat-value">{{ $student->schoolClass->name ?? 'N/A' }}</div>
-                    <div class="stat-sub">Tahun Ajaran 2025/2026</div>
+                    <div class="stat-sub">Tahun Ajaran {{ $academicYear ?? 'N/A' }}</div>
                 </div>
             </div>
             <div class="stat-card">
