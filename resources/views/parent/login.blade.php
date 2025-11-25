@@ -7,13 +7,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Reset CSS */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --primary: #f59e0b; /* Oranye/emas sesuai dashboard */
+            --primary-dark: #d97706; /* Varian gelap untuk hover/aksen */
+            --danger: #d24900; /* Untuk status 'danger' */
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
         body {
-            background-color: #f4f6f9; /* Warna background abu-abu terang */
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            height: 100vh;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,54 +39,61 @@
         /* --- 1. BAGIAN HEADER LOGO (KIRI ATAS) --- */
         .header-logo {
             position: absolute;
-            top: 25px;
+            top: 20px;
             left: 30px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .header-logo img {
-            height: 50px; /* Sesuaikan ukuran logo asli Anda */
+            height: 70px;
             width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .logo-text {
             display: flex;
             flex-direction: column;
+            gap: 2px;
         }
 
         .logo-text h1 {
-            font-size: 18px;
-            color: #d32f2f; /* Merah sesuai tema */
-            font-weight: 800;
-            line-height: 1.2;
+            font-size: 22px;
+            color: var(--primary);
+            font-weight: 900;
+            line-height: 1.1;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .logo-text p {
-            font-size: 13px;
-            color: #1a237e; /* Biru tua */
+        .logo-text .subtitle {
+            font-size: 11px;
+            color: var(--text-gray);
             font-weight: 600;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
         }
 
         /* --- 2. BAGIAN KARTU LOGIN --- */
         .login-card {
-            background-color: white;
+            background-color: var(--bg-card);
             width: 100%;
-            max-width: 380px; /* Lebar kartu */
-            padding: 55px 30px 40px 30px; /* Padding atas lebih besar untuk ikon */
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Bayangan halus */
+            max-width: 380px;
+            padding: 55px 30px 40px 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
             position: relative;
             text-align: center;
         }
 
-        /* Ikon Merah Mengambang */
+        /* Ikon Oranye Mengambang */
         .floating-icon {
-            background-color: #e53935; /* Warna Merah */
+            background-color: var(--primary);
             width: 70px;
             height: 70px;
             border-radius: 12px;
@@ -79,21 +102,59 @@
             align-items: center;
             color: white;
             font-size: 32px;
-
-            /* Posisi Absolute agar 'nangkring' di atas */
             position: absolute;
             top: -35px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
         }
 
         .login-title {
             font-size: 24px;
             font-weight: 700;
-            color: #455a64; /* Abu-abu gelap */
-            margin-bottom: 30px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
             margin-top: 10px;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        /* Password Visibility Toggle */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-gray);
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        /* Remove number spinner dari input number */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
         /* Input Style */
@@ -105,29 +166,29 @@
         .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #cfd8dc;
+            border: 1px solid #e5e7eb;
             border-radius: 6px;
             font-size: 14px;
-            color: #333;
+            color: var(--text-dark);
             outline: none;
-            transition: border-color 0.3s;
-            background-color: #fff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: var(--bg-card);
         }
 
         .form-control:focus {
-            border-color: #90a4ae;
-            box-shadow: 0 0 0 3px rgba(207, 216, 220, 0.4);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
         /* Placeholder styling */
         ::placeholder {
-            color: #b0bec5;
+            color: var(--text-gray);
         }
 
-        /* Tombol Submit Hijau */
+        /* Tombol Submit Oranye */
         .btn-submit {
             width: 100%;
-            background-color: #4caf50; /* Hijau */
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 12px;
@@ -138,16 +199,16 @@
             text-transform: uppercase;
             margin-top: 10px;
             transition: background 0.3s;
-            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
         }
 
         .btn-submit:hover {
-            background-color: #43a047;
+            background-color: var(--primary-dark);
         }
 
         /* Pesan Error */
         .error-message {
-            color: #e53935;
+            color: var(--danger);
             font-size: 12px;
             margin-top: 4px;
             margin-left: 2px;
@@ -157,36 +218,38 @@
         .helper-text {
             margin-top: 20px;
             font-size: 12px;
-            color: #78909c;
+            color: var(--text-gray);
             line-height: 1.5;
         }
 
-        /* --- 3. BAGIAN FOOTER (KIRI BAWAH) --- */
+        /* --- 3. BAGIAN FOOTER (TENGAH BAWAH) --- */
         .footer-copyright {
             position: absolute;
             bottom: 20px;
-            left: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 12px;
-            color: #90a4ae;
+            color: var(--text-gray);
+            text-align: center;
         }
 
         /* Responsif untuk HP */
         @media (max-width: 480px) {
             .header-logo { top: 15px; left: 15px; }
-            .footer-copyright { bottom: 15px; left: 15px; text-align: center; width: 100%; left: 0; }
+            .footer-copyright { bottom: 15px; left: 50%; transform: translateX(-50%); }
         }
     </style>
 </head>
 <body>
 
     <div class="header-logo">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Logo_Tut_Wuri_Handayani.png/1200px-Logo_Tut_Wuri_Handayani.png"
-             alt="Logo Sekolah"
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRREfgu-nyq5Yr4kFaoeVrgSE56f4oWhaJqdA&s"
+             alt="Logo Universitas Teknokrat Indonesia"
              style="height: 50px;">
 
         <div class="logo-text">
-            <h1>SMP NEGERI 1</h1>
-            <p>MENGGALA</p>
+            <h1>SMP NEGERI 1 MENGGALA</h1>
+            <div class="subtitle">Sistem Monitoring Siswa Terpadu</div>
         </div>
     </div>
 
@@ -196,6 +259,7 @@
         </div>
 
         <h2 class="login-title">Digital Parent</h2>
+        <p class="login-subtitle">Portal Informasi Akademik Siswa</p>
 
         <form action="{{ route('parent.login.submit') }}" method="POST">
             @csrf
@@ -207,15 +271,18 @@
                 @enderror
             </div>
 
-            <div class="form-group">
+            <div class="form-group password-wrapper">
                 <input type="password" id="password" name="password" class="form-control" required placeholder="Tanggal Lahir (ex: 14051992)">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
 
             <button type="submit" class="btn-submit">SUBMIT</button>
         </form>
 
         <p class="helper-text">
-            Silahkan melakukan validasi untuk mendapatkan Informasi Akademik Siswa
+            Silahkan melakukan Validasi Untuk Mendapatkan Informasi Akademik Siswa
         </p>
     </div>
 
@@ -225,5 +292,21 @@
         </small>
     </div>
 
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleButton = document.querySelector('.toggle-password i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.classList.remove('fa-eye');
+                toggleButton.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.classList.remove('fa-eye-slash');
+                toggleButton.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
