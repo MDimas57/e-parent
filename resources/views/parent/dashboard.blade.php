@@ -338,11 +338,14 @@
                     try {
                         $setting = SchoolSetting::latest('id')->first();
                         if ($setting) {
-                            $academicYear = $setting->academic_year
-                                ?? $setting->school_year
-                                ?? $setting->tahun_ajaran
-                                ?? (isset($setting->start_year, $setting->end_year) ? $setting->start_year . '/' . $setting->end_year : null)
-                                ?? ($setting->year ?? null);
+                            $academicYear =
+                                $setting->academic_year ??
+                                ($setting->school_year ??
+                                    ($setting->tahun_ajaran ??
+                                        ((isset($setting->start_year, $setting->end_year)
+                                            ? $setting->start_year . '/' . $setting->end_year
+                                            : null) ??
+                                            ($setting->year ?? null))));
                         }
                     } catch (\Throwable $e) {
                         $academicYear = null;
@@ -391,31 +394,93 @@
 
                 @if ($grades->isEmpty())
                     <div style="padding:16px; color:gray; font-size:13px;">Belum ada data nilai untuk ditampilkan.</div>
-                    <div class="chart-placeholder" aria-hidden="true">
-                        <div class="bar-wrap">
-                            <div class="chart-value">0</div>
-                            <div class="chart-bar" style="height: 5%;" title="N/A"></div>
+                    <div style="display: flex; gap: 10px; align-items: flex-end;">
+                        <div
+                            style="display: flex; flex-direction: column; justify-content: space-between; height: 300px; text-align: right; color: #9ca3af; font-size: 11px; padding-bottom: 2px;">
+                            <span>100</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span>
+                        </div>
+                        <div class="chart-placeholder"
+                            style="flex: 1; height: 300px; background: repeating-linear-gradient(0deg, transparent, transparent 59px, #e5e7eb 60px);">
+                            <div class="bar-wrap">
+                                <div class="chart-value">0</div>
+                                <div class="chart-bar" style="height: 5%;" title="N/A"></div>
+                            </div>
                         </div>
                     </div>
                 @else
-                    <div class="chart-placeholder">
-                        @foreach ($grades as $grade)
-                            @php
-                                $avg = round($grade->avg_score, 1);
-                                $height = min(max($avg, 0), 100);
-                            @endphp
-                            <div class="bar-wrap">
-                                <div class="chart-value">{{ $avg }}</div>
-                                <div class="chart-bar" style="height: {{ $height }}%;"
-                                    title="Semester {{ $grade->semester }} — {{ $avg }}"></div>
+                    <div style="display: flex; gap: 10px;">
+
+                        <div style="display: flex; flex-direction: column; justify-content: space-between; height: 300px; text-align: right; min-width: 25px; color: #9ca3af; font-size: 11px; font-weight: 500; padding-bottom: 0px;">
+                            <span style="transform: translateY(-50%);">100</span>
+                            <span style="transform: translateY(-50%);">80</span>
+                            <span style="transform: translateY(-50%);">60</span>
+                            <span style="transform: translateY(-50%);">40</span>
+                            <span style="transform: translateY(-50%);">20</span>
+                            <span style="transform: translateY(50%);">0</span>
+                        </div>
+
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+
+                            <div class="chart-placeholder"
+                                style="position: relative; width: 100%; height: 300px; background: repeating-linear-gradient(0deg, transparent, transparent 59px, #e5e7eb 60px); border-top: 1px dashed #e5e7eb; display: flex; align-items: flex-end; justify-content: space-around;">
+
+                                {{-- LOGIKA UNTUK GARIS (TREND LINE) --}}
+                                @php
+                                    $count = $grades->count();
+                                    $polylinePoints = "";
+                                    $circles = [];
+
+                                    foreach ($grades as $index => $grade) {
+                                        $avg = round($grade->avg_score, 1);
+                                        $h = min(max($avg, 0), 100);
+
+                                        // Hitung posisi X dan Y dalam Persentase
+                                        $posX = (($index * 2 + 1) / ($count * 2)) * 100;
+                                        $posY = 100 - $h;
+
+                                        $polylinePoints .= "{$posX},{$posY} ";
+                                        $circles[] = ['x' => $posX, 'y' => $posY];
+                                    }
+                                @endphp
+
+                                {{-- SVG Overlay untuk Garis --}}
+                                <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    {{-- stroke-dasharray dihapus agar garis menjadi utuh (solid) --}}
+                                    <polyline points="{{ $polylinePoints }}"
+                                              fill="none"
+                                              stroke="#3b82f6"
+                                              stroke-width="2"
+                                              vector-effect="non-scaling-stroke" />
+
+                                    @foreach($circles as $circle)
+                                        <circle cx="{{ $circle['x'] }}" cy="{{ $circle['y'] }}" r="0.6" fill="#3b82f6" stroke="none" />
+                                    @endforeach
+                                </svg>
+
+                                {{-- BATANG GRAFIK (Eksisting) --}}
+                                @foreach ($grades as $grade)
+                                    @php
+                                        $avg = round($grade->avg_score, 1);
+                                        $height = min(max($avg, 0), 100);
+                                    @endphp
+                                    <div class="bar-wrap" style="z-index: 5;">
+                                        <div class="chart-value" style="font-weight: bold; color: var(--primary);">
+                                            {{ $avg }}</div>
+                                        <div class="chart-bar"
+                                            style="height: {{ $height }}%; width: 40px; border-radius: 6px 6px 0 0;"
+                                            title="Semester {{ $grade->semester }} — {{ $avg }}"></div>
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-                    <div
-                        style="display: flex; justify-content: space-around; font-size: 12px; color: gray; margin-top: 10px;">
-                        @foreach ($grades as $grade)
-                            <span>{{ $grade->semester }}</span>
-                        @endforeach
+
+                            <div style="display: flex; justify-content: space-around; font-size: 12px; color: #4b5563; margin-top: 10px; font-weight: 500;">
+                                @foreach ($grades as $grade)
+                                    <div style="width: 40px; text-align: center;">
+                                        {{ $grade->semester }}
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 @endif
             </div>
