@@ -1,108 +1,123 @@
 <x-filament-panels::page>
     
-    {{-- 
-        WRAPPER UTAMA 
-        x-data: Mengontrol status kamera dan loading
-    --}}
     <div 
         x-data="{
-            scanner: null,
+            qrScanner: null,
             isProcessing: false,
-            isLoading: true, // <-- VARIABLE BARU: Defaultnya Loading
-            initCamera() {
-                if (!document.getElementById('html5-qrcode-script')) {
-                    let script = document.createElement('script');
-                    script.id = 'html5-qrcode-script';
-                    script.src = 'https://unpkg.com/html5-qrcode';
-                    script.onload = () => this.startScanner();
+            isLoading: true,
+            lastText: null,
+            lastTime: 0,
+
+            async initCamera() {
+                // Load script qr-scanner UMD sekali saja
+                if (!document.getElementById('qr-scanner-script')) {
+                    const script = document.createElement('script');
+                    script.id = 'qr-scanner-script';
+                    script.src = '{{ asset('js/qr-scanner.umd.min.js') }}'; // file di public/js
+                    script.onload = () => {
+                        // SET WORKER PATH SETELAH SCRIPT TERLOAD
+                        QrScanner.WORKER_PATH = '{{ asset('js/qr-scanner-worker.min.js') }}';
+                        this.startScanner();
+                    };
                     document.head.appendChild(script);
                 } else {
                     this.startScanner();
                 }
             },
+
             startScanner() {
-                if (this.scanner) return;
+                if (this.qrScanner || !window.QrScanner) return;
 
-                this.scanner = new Html5Qrcode('reader');
-                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                const videoElem = document.getElementById('reader-video');
 
-                this.scanner.start(
-                    { facingMode: 'environment' }, 
-                    config, 
-                    (decodedText) => {
-                        // SAAT SUKSES SCAN
+                this.qrScanner = new QrScanner(
+                    videoElem,
+                    result => {
+                        const decodedText = result.data ?? result;
+
+                        const now = Date.now();
+                        if (decodedText === this.lastText && now - this.lastTime < 1500) {
+                            return;
+                        }
+                        this.lastText = decodedText;
+                        this.lastTime = now;
+
                         if (this.isProcessing) return;
                         if (@this.get('is_modal_open')) return;
 
                         console.log('QR Detected:', decodedText);
                         this.isProcessing = true;
-                        
-                        new Audio('https://www.soundjay.com/button/beep-07.wav').play().catch(() => {});
 
+                        new Audio('{{ asset('sounds/beep.wav') }}').play().catch(() => {});
+                        
                         $wire.save(decodedText).then(() => {
                             setTimeout(() => { this.isProcessing = false; }, 2000);
                         });
                     },
-                    (errorMessage) => {
-                        // Biarkan kosong agar tidak spam console
+                    {
+                        preferredCamera: 'environment',
+                        maxScansPerSecond: 8,
+                        highlightScanRegion: true,
+                        returnDetailedScanResult: true,
                     }
-                ).then(() => {
-                    // --- PERBAIKAN UTAMA DI SINI ---
-                    // Saat kamera berhasil nyala, matikan loading
-                    console.log('Kamera Siap!');
-                    this.isLoading = false; 
-                }).catch(err => {
-                    console.error('Camera Fail:', err);
-                    alert('Gagal akses kamera: ' + err);
-                    this.isLoading = false; // Hilangkan loading meski error
-                });
+                );
+
+                this.qrScanner.start()
+                    .then(() => {
+                        console.log('Kamera Siap (Nimiq)');
+                        this.isLoading = false;
+                    })
+                    .catch(err => {
+                        console.error('Camera Fail:', err);
+                        alert('Gagal akses kamera: ' + err);
+                        this.isLoading = false;
+                    });
             }
         }"
         x-init="initCamera()"
-        @resume-camera.window="isProcessing = false"
+        @resume-camera.window="
+            isProcessing = false;
+            lastText = null;
+            lastTime = 0;
+        "
     >
 
         <div class="flex flex-col items-center justify-center space-y-6 relative">
 
-            {{-- HEADER --}}
             <div class="text-center">
                 <h2 class="text-2xl font-bold text-primary-600">Scan QR Code Siswa</h2>
                 <p class="text-gray-500 text-sm">Kamera aktif. Pastikan QR Code jelas.</p>
             </div>
 
-            {{-- AREA KAMERA --}}
             <div wire:ignore class="w-full max-w-md bg-black rounded-xl overflow-hidden shadow-lg relative min-h-[350px]">
-                
-                {{-- VIDEO ELEMENT --}}
-                <div id="reader" class="w-full h-full bg-gray-900"></div>
-                
-                {{-- LOADING OVERLAY (Dikontrol oleh x-show="isLoading") --}}
+                <video id="reader-video" class="w-full h-full bg-gray-900" autoplay muted playsinline></video>
+
                 <div 
                     x-show="isLoading" 
                     class="absolute inset-0 flex items-center justify-center bg-black text-white z-10"
                 >
                     <div class="flex flex-col items-center">
                         <svg class="animate-spin h-8 w-8 text-white mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            ircle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <span class="font-bold">Menyiapkan Kamera...</span>
                     </div>
                 </div>
-
             </div>
 
-            {{-- MODAL POPUP (HASIL SCAN) --}}
             @if($is_modal_open)
                 <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-bounce-in">
-                        
-                        {{-- Ikon --}}
                         <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-4 shadow-md {{ $scanned_data['color'] }}">
                             @if($scanned_data['status'] == 'success')
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             @else
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
                             @endif
                         </div>
 
@@ -119,17 +134,24 @@
 
                         <p class="mt-4 text-gray-600 text-sm">{{ $scanned_data['message'] }}</p>
 
-                        <button wire:click="resetScan" class="mt-6 w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none">
+                        <button
+                            wire:click="resetScan"
+                            class="mt-6 w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none"
+                        >
                             Scan Selanjutnya
                         </button>
                     </div>
                 </div>
             @endif
 
-            {{-- INPUT MANUAL --}}
             <div class="w-full max-w-md mt-8">
                 <form wire:submit="save">
-                    <input type="text" wire:model="nisn_input" placeholder="Input NISN Manual..." class="block w-full pl-4 pr-3 py-2 border border-gray-300 rounded-lg text-center shadow-sm" />
+                    <input
+                        type="text"
+                        wire:model="nisn_input"
+                        placeholder="Input NISN Manual..."
+                        class="block w-full pl-4 pr-3 py-2 border border-gray-300 rounded-lg text-center shadow-sm"
+                    />
                 </form>
             </div>
 
@@ -139,7 +161,7 @@
     <style>
         @keyframes bounce-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-bounce-in { animation: bounce-in 0.2s ease-out forwards; }
-        #reader video { object-fit: cover; border-radius: 0.75rem; width: 100% !important; height: 100% !important; }
+        #reader-video { object-fit: cover; border-radius: 0.75rem; width: 100% !important; height: 100% !important; }
     </style>
 
 </x-filament-panels::page>
