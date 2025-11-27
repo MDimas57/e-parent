@@ -35,12 +35,11 @@
                     result => {
                         const decodedText = result.data ?? result;
 
-                        const now = Date.now();
-                        if (decodedText === this.lastText && now - this.lastTime < 1500) {
+                        // Hanya cegah spam QR yang SAMA persis (tanpa jeda waktu)
+                        if (decodedText === this.lastText) {
                             return;
                         }
                         this.lastText = decodedText;
-                        this.lastTime = now;
 
                         if (this.isProcessing) return;
                         if (@this.get('is_modal_open')) return;
@@ -49,9 +48,10 @@
                         this.isProcessing = true;
 
                         new Audio('{{ asset('sounds/beep.wav') }}').play().catch(() => {});
-                        
+
+                        // TANPA setTimeout, langsung siap lagi setelah save selesai
                         $wire.save(decodedText).then(() => {
-                            setTimeout(() => { this.isProcessing = false; }, 2000);
+                            this.isProcessing = false;
                         });
                     },
                     {
