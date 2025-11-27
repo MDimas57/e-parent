@@ -9,13 +9,11 @@
             lastTime: 0,
 
             async initCamera() {
-                // Load script qr-scanner UMD sekali saja
                 if (!document.getElementById('qr-scanner-script')) {
                     const script = document.createElement('script');
                     script.id = 'qr-scanner-script';
-                    script.src = '{{ asset('js/qr-scanner.umd.min.js') }}'; // file di public/js
+                    script.src = '{{ asset('js/qr-scanner.umd.min.js') }}';
                     script.onload = () => {
-                        // SET WORKER PATH SETELAH SCRIPT TERLOAD
                         QrScanner.WORKER_PATH = '{{ asset('js/qr-scanner-worker.min.js') }}';
                         this.startScanner();
                     };
@@ -35,7 +33,6 @@
                     result => {
                         const decodedText = result.data ?? result;
 
-                        // Hanya cegah spam QR yang SAMA persis (tanpa jeda waktu)
                         if (decodedText === this.lastText) {
                             return;
                         }
@@ -49,9 +46,13 @@
 
                         new Audio('{{ asset('sounds/beep.wav') }}').play().catch(() => {});
 
-                        // TANPA setTimeout, langsung siap lagi setelah save selesai
                         $wire.save(decodedText).then(() => {
                             this.isProcessing = false;
+
+                            // TUNGGU SEBENTAR LALU TUTUP MODAL & SIAP SCAN LAGI
+                            setTimeout(() => {
+                                this.autoCloseModal();
+                            }, 1000); // 1 detik, silakan ubah sesuai kebutuhan
                         });
                     },
                     {
@@ -72,6 +73,11 @@
                         alert('Gagal akses kamera: ' + err);
                         this.isLoading = false;
                     });
+            },
+
+            autoCloseModal() {
+                // panggil method Livewire resetScan -> akan emit resume-camera
+                $wire.resetScan();
             }
         }"
         x-init="initCamera()"
@@ -133,13 +139,6 @@
                         @endif
 
                         <p class="mt-4 text-gray-600 text-sm">{{ $scanned_data['message'] }}</p>
-
-                        <button
-                            wire:click="resetScan"
-                            class="mt-6 w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none"
-                        >
-                            Scan Selanjutnya
-                        </button>
                     </div>
                 </div>
             @endif
