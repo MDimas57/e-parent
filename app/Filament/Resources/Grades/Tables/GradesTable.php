@@ -4,8 +4,10 @@ namespace App\Filament\Resources\Grades\Tables;
 
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\EditAction;   // Import Tombol Edit
-use Filament\Tables\Actions\DeleteAction; // Import Tombol Hapus
+use Filament\Tables\Actions\Action; // Gunakan Action generik
+use Filament\Tables\Actions\DeleteAction;
+use App\Filament\Resources\Grades\GradeResource; // Import Resource untuk generate URL
+use App\Models\Grade;
 
 class GradesTable
 {
@@ -14,32 +16,41 @@ class GradesTable
         return $table
             ->columns([
                 TextColumn::make('student.name')
-                    ->label('Siswa')
+                    ->label('Nama Siswa')
                     ->searchable()
                     ->sortable(),
 
-                // Ubah label kolom ini jadi Semester
-                TextColumn::make('subject')
-                    ->label('Semester')
-                    ->badge() // Opsional: Biar tampilannya seperti lencana
-                    ->color('info')
-                    ->searchable(),
+                TextColumn::make('student.schoolClass.name')
+                    ->label('Kelas')
+                    ->sortable(),
 
-                TextColumn::make('score')
-                    ->label('Nilai')
-                    ->sortable()
-                    ->numeric()
-                    
+                // Menghitung jumlah nilai yang sudah diinput
+                // Pastikan relasi 'studentGrades' sudah ada di Model Grade
+                TextColumn::make('student_grades_count')
+                    ->counts('studentGrades') 
+                    ->label('Total Data Nilai')
+                    ->badge()
+                    ->color('info'),
             ])
             ->filters([
                 //
             ])
-            // --- TOMBOL HAPUS DAN EDIT ADA DI SINI ---
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+                // --- TOMBOL BUKA HALAMAN KHUSUS ---
+                Action::make('manage')
+                    ->label('Kelola Nilai')
+                    ->icon('heroicon-m-pencil-square') // Ikon Pensil
+                    ->color('primary')
+                    // Arahkan ke rute 'manage' yang baru kita daftarkan
+                    // Kita kirim 'record' (ID nilai) agar halaman tahu siswa mana yang dimaksud
+                    ->url(fn (Grade $record) => GradeResource::getUrl('manage', ['record' => $record])),
+                // ----------------------------------
+
+                // Tombol Hapus (Hanya menghapus data nilai terbaru yang tampil di row ini)
+                DeleteAction::make()
+                    ->label('Hapus')
+                    ->color('gray'),
             ])
-            // -----------------------------------------
             ->bulkActions([
                 //
             ]);
