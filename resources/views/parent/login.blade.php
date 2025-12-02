@@ -346,7 +346,7 @@
 
     <div class="footer-copyright">
         <small style="color:#90a4ae; font-size:12px;">
-            &copy; {{ date('Y') }}, Tim IT - SMP Negeri 1 Menggala. All rights reserved.
+            &copy; {{ date('Y') }}, SMP Negeri 1 Menggala. All rights reserved.
         </small>
     </div>
 

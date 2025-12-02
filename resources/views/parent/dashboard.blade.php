@@ -646,7 +646,7 @@
     </div>
 
     <div class="footer-copyright">
-        &copy; 2025, Tim IT - SMP Negeri 1 Menggala. All rights reserved.
+        &copy; 2025, SMP Negeri 1 Menggala. All rights reserved.
     </div>
 </body>
 
