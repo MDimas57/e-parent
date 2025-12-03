@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile(EditProfile::class) 
             // ---------------------------------------------------------
 
-            ->brandName(fn () => auth()->user()?->role === 'parent' ? 'Dashboard Orang Tua' : 'E-Parent Admin')
+            ->brandName(fn () => auth()->user()?->role === 'parent' ? 'Dashboard Orang Tua' : 'Digital Parent Admin')
             ->colors([
                 'primary' => Color::Amber,
             ])

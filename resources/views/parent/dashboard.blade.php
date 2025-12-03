@@ -40,22 +40,36 @@
 
         /* --- 2. HEADER --- */
         .header {
-            background-color: var(--bg-card);
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    background-color: var(--bg-card);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* hapus: height: 80px; */
+}
+
 
         .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.logo-wrapper {
+    max-height: 70px;   /* ubah angka ini kalau mau lebih besar/kecil */
+}
+
+.logo-wrapper img {
+    display: block;
+    height: 100%;
+    width: auto;        /* jaga proporsi, tidak melebar */
+    max-height: 70px;   /* pastikan sama dengan di .logo-wrapper */
+}
+
 
         .brand-text h1 {
             font-size: 24px;
@@ -294,10 +308,11 @@
 <body>
 
     <header class="header">
-        <div class="brand-logo">
-            <div
-                style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
-                DP</div>
+        <div class="brand-logo" style="margin-right: 2px;">
+    <div class="logo-wrapper">
+        <img src="{{ asset('images/logo digital parent.png') }}"
+             alt="Logo Digital Parent">
+    </div>
             <div class="brand-text">
                 <h1>DIGITAL PARENT</h1>
                 <span>Sistem Monitoring Siswa Terpadu</span>
@@ -341,12 +356,21 @@
 
             try {
                 $grades = Grade::where('student_id', $student->id)
-                    ->selectRaw('subject as semester, AVG(score) as avg_score')
-                    ->groupBy('subject')
-                    ->orderByRaw(
-                        "CASE WHEN subject LIKE 'Semester %' THEN CAST(SUBSTRING(subject, 10) AS UNSIGNED) ELSE 999 END, subject",
-                    )
-                    ->get();
+    ->selectRaw('
+        subject as semester,
+        AVG(score) as avg_score,
+        /* ambil nama kelas: bagian setelah "Kelas " sebelum " Semester" */
+        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(subject, "Semester", 1), "Kelas", -1)) as class_name,
+        /* ambil angka semester: bagian setelah "Semester " */
+        CAST(TRIM(SUBSTRING_INDEX(subject, "Semester ", -1)) AS UNSIGNED) as semester_num
+    ')
+    ->groupBy('semester', 'class_name', 'semester_num')
+    ->orderByRaw('
+        FIELD(class_name, "VII", "VIII", "IX") ASC,
+        semester_num ASC
+    ')
+    ->get();
+
 
                 if ($grades->isNotEmpty()) {
                     $totalAverage = $grades->avg('avg_score');
@@ -516,11 +540,12 @@
                             </div>
 
                             <div
-                                style="display: flex; justify-content: space-around; font-size: 12px; color: #4b5563; margin-top: 10px; font-weight: 500;">
+                                style="display: flex; justify-content: space-around; font-size: 11px; color: #4b5563; margin-top: 10px; font-weight: 500;">
                                 @foreach ($grades as $grade)
-                                    <div style="width: 40px; text-align: center;">
-                                        {{ $grade->semester }}
-                                    </div>
+                                    <div style="width: 60px; text-align: center; line-height: 1.2;">
+                                     Kelas {{ $grade->class_name ?? '-' }}<br>
+                                     Semester {{ $grade->semester_num ?? '-' }}
+                                     </div>
                                 @endforeach
                             </div>
                         </div>

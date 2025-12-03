@@ -301,8 +301,8 @@
 <body>
 
     <div class="header-logo">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRREfgu-nyq5Yr4kFaoeVrgSE56f4oWhaJqdA&s"
-             alt="Logo Universitas Teknokrat Indonesia"
+        <img src="{{ asset('images/logo smp.png') }}"
+             alt="Logo SMP Negeri 1 Menggala"
              style="height: 50px;">
 
         <div class="logo-text">

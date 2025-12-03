@@ -65,11 +65,11 @@ class ManageStudentGrades extends Page implements HasForms
                                 Select::make('subject')
                                     ->label('Semester')
                                     ->options([
-                                        'Semester 1' => 'Semester 1',
-                                        'Semester 2' => 'Semester 2',
-                                        'Semester 3' => 'Semester 3',
-                                        'Semester 4' => 'Semester 4',
-                                        'Semester 5' => 'Semester 5',
+                                        'Kelas VII Semester 1' => 'Kelas VII Semester 1',
+                                        'Kelas VIISemester 2' => 'Kelas VII Semester 2',
+                                        'Kelas VIII Semester 1' => 'Kelas VIII Semester 1',
+                                        'Kelas VIII Semester 2' => 'Kelas VIII Semester 2',
+                                        'Kelas IX Semester 1' => 'Kelas IX Semester 1',
                                     ])
                                     ->required()
                                     ->columnSpan(1),
