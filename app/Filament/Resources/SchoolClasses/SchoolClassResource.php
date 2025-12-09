@@ -10,17 +10,17 @@ use App\Filament\Resources\SchoolClasses\Tables\SchoolClassesTable;
 use App\Models\SchoolClass;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Filament\Forms\Form; // WAJIB: Gunakan Form (V3)
+use Filament\Forms\Form; 
 
 class SchoolClassResource extends Resource
 {
     protected static ?string $model = SchoolClass::class;
 
-    // PERBAIKAN 1: Ubah tipe jadi ?string dan gunakan string icon biasa
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Data Sekolah';
-    // PERBAIKAN 2: Tambahkan Label Navigasi (Opsional, biar rapi)
     protected static ?string $navigationLabel = 'Data Kelas';
+    protected static ?string $pluralLabel = 'Data Kelas';
+    protected static ?string $modelLabel = 'Data Kelas';
 
     public static function canViewAny(): bool
     {

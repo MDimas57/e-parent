@@ -10,10 +10,21 @@ class ListGrades extends ListRecords
 {
     protected static string $resource = GradeResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Daftar Nilai';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar Nilai';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Nilai'),
         ];
     }
 }

@@ -20,6 +20,7 @@ class TeacherResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user';
     protected static ?string $navigationGroup = 'Data Sekolah';
     protected static ?string $navigationLabel = 'Data Guru';
+    protected static ?string $pluralLabel = 'Data Guru';
 
     protected static ?string $recordTitleAttribute = 'name';
 

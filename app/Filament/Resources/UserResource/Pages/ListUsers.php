@@ -7,17 +7,29 @@ use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab; // Import Tab
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\CreateAction;
 
 class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
+     public function getTitle(): string
+        {
+            return 'Daftar Pengguna';
+        }
+
+    public function getBreadcrumb(): string
+        {
+            return 'Daftar Pengguna';
+        }
+
     protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+        {
+            return [
+                CreateAction::make()
+                    ->label('Tambah Pengguna'),
+            ];
+        }
 
     // FITUR TABS (Membuat seolah-olah 3 Halaman)
     public function getTabs(): array

@@ -10,10 +10,21 @@ class ListSchoolClasses extends ListRecords
 {
     protected static string $resource = SchoolClassResource::class;
 
+    public function getTitle(): string
+        {
+            return 'Daftar Kelas';
+        }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar Kelas';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Kelas'),
         ];
     }
 }

@@ -10,10 +10,21 @@ class ListAttendances extends ListRecords
 {
     protected static string $resource = AttendanceResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Daftar Absensi';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Daftar Absensi';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Absensi'),
         ];
     }
 }

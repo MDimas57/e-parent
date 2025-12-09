@@ -10,10 +10,21 @@ class ListTeachers extends ListRecords
 {
     protected static string $resource = TeacherResource::class;
 
+    public function getTitle(): string
+        {
+            return 'Daftar Guru';
+        }
+
+    public function getBreadcrumb(): string
+        {
+            return 'Daftar Guru';
+        }
+
     protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
+        {
+            return [
+                CreateAction::make()
+                    ->label('Tambah Guru'),
+            ];
+        }
 }

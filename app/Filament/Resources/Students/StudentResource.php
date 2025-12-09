@@ -24,6 +24,8 @@ class StudentResource extends Resource
     protected static ?string $navigationLabel = 'Data Siswa';
     protected static ?string $navigationGroup = 'Data Sekolah';
     protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $pluralLabel = 'Data Siswa';
+    protected static ?string $modelLabel = 'Data Siswa';
 
     public static function getEloquentQuery(): Builder
     {

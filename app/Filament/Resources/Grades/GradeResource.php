@@ -23,6 +23,8 @@ class GradeResource extends Resource
     protected static ?string $navigationGroup = 'Absensi & Laporan';
     
     protected static ?string $navigationLabel = 'Nilai Siswa';
+    protected static ?string $pluralLabel = 'Nilai Siswa';
+    protected static ?string $modelLabel = 'Nilai Siswa';
 
     // Filter Query: Agar 1 Siswa hanya muncul 1 kali di tabel (Grouping)
     public static function getEloquentQuery(): Builder

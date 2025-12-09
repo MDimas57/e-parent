@@ -10,10 +10,21 @@ class ListStudents extends ListRecords
 {
     protected static string $resource = StudentResource::class;
 
+    public function getTitle(): string
+        {
+            return 'Daftar Siswa';
+        }
+
+    public function getBreadcrumb(): string
+        {
+            return 'Daftar Siswa';
+        }
+
     protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
+        {
+            return [
+                CreateAction::make()
+                    ->label('Tambah Siswa'),
+            ];
+        }
 }

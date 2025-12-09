@@ -33,8 +33,6 @@ class AttendanceForm
                 Select::make('status')
                     ->label('Status Kehadiran')
                     ->options([
-                        // Kita sembunyikan opsi 'Hadir' agar Guru fokus input Izin/Sakit
-                        // 'Hadir' otomatis dari Scan QR
                         'Izin' => 'Izin',
                         'Sakit' => 'Sakit',
                         'Alpha' => 'Alpha',

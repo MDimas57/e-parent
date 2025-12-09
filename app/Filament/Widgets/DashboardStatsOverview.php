@@ -7,7 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Attendance;
-use App\Models\SchoolClass; // <--- Import Model Kelas
+use App\Models\SchoolClass; 
 use Illuminate\Support\Facades\Auth;
 
 class DashboardStatsOverview extends BaseWidget

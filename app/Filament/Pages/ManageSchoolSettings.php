@@ -17,11 +17,10 @@ class ManageSchoolSettings extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    
-    protected static ?string $navigationLabel = 'Jam & Tahun Ajaran';
+    protected static ?string $navigationLabel = 'Jam & Tahun Ajaran'; // Label di Sidebar
+    protected static ?string $title = 'Jam & Tahun Ajaran';   
     protected static ?string $navigationGroup = 'Pengaturan Sekolah';
     protected static ?int $navigationSort = 100; // Paling bawah di sidebar
-
     protected static string $view = 'filament.pages.manage-school-settings';
 
     // Hanya Admin yang boleh mengakses halaman ini
