@@ -9,17 +9,13 @@
         /* --- 1. CSS RESET & VARIABLES --- */
         :root {
             --bg-body: #f3f4f6;
-            /* Abu-abu terang */
             --bg-card: #ffffff;
-            /* Putih */
-            --primary: #f59e0b; /* Oranye/emas sesuai gambar */
-            --primary-dark: #d97706; /* Varian gelap untuk hover/aksen */
-            --danger: #d24900; /* Pengganti merah untuk status 'danger' */
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --danger: #d24900;
             --text-dark: #1f2937;
-            /* Hitam */
-            --online: #16a34a; /* Warna hijau untuk status Online */
+            --online: #16a34a;
             --text-gray: #6b7280;
-            /* Abu-abu */
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
@@ -40,48 +36,94 @@
 
         /* --- 2. HEADER --- */
         .header {
-    background-color: var(--bg-card);
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    /* hapus: height: 80px; */
-}
+            background-color: var(--bg-card);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
 
         .brand-logo {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
+            display: flex;
+            align-items: center;
+            /* PERUBAHAN 1: Jarak diperkecil dari 16px ke 10px */
+            gap: 10px; 
+        }
 
-.logo-wrapper {
-    max-height: 70px;   /* ubah angka ini kalau mau lebih besar/kecil */
-}
+        .logo-wrapper {
+            max-height: 80px;
+            flex-shrink: 0;
+        }
 
-.logo-wrapper img {
-    display: block;
-    height: 100%;
-    width: auto;        /* jaga proporsi, tidak melebar */
-    max-height: 70px;   /* pastikan sama dengan di .logo-wrapper */
-}
+        .logo-wrapper img {
+            display: block;
+            height: 100%;
+            width: auto;
+            max-height: 80px;
+        }
 
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
 
         .brand-text h1 {
             font-size: 24px;
             font-weight: 800;
             color: var(--primary);
-            line-height: 1;
+            line-height: 1.1;
+            margin-bottom: 2px;
         }
 
-        .brand-text span {
+        .brand-text span.subtitle {
             font-size: 14px;
             color: var(--text-gray);
             font-weight: 500;
+        }
+
+        /* --- CSS BARU UNTUK BADGE SEKOLAH (DIPERBESAR) --- */
+        .school-pill {
+            margin-top: 8px;
+            background-color: var(--primary);
+            color: white;
+            /* PERUBAHAN 2: Padding diperbesar agar kotak lebih besar */
+            padding: 6px 8px 6px 20px; 
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            /* PERUBAHAN 3: Font size diperbesar sedikit */
+            font-size: 15px; 
+            font-weight: 700;
+            width: fit-content;
+            box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .school-pill:hover {
+            transform: translateY(-1px);
+        }
+
+        .online-badge {
+            background: white;
+            color: var(--online);
+            /* PERUBAHAN 4: Badge Online juga diperbesar mengikuti induknya */
+            padding: 4px 12px; 
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         .btn-logout {
@@ -285,7 +327,7 @@
             }
         }
 
-        /* Footer copyright (match login.blade.php) */
+        /* Footer copyright */
         .footer-copyright {
             position: relative;
             margin-top: auto;
@@ -301,6 +343,10 @@
             .footer-copyright {
                 padding: 15px;
             }
+            .school-pill {
+                font-size: 12px; /* Disesuaikan untuk mobile */
+                padding: 4px 6px 4px 14px;
+            }
         }
     </style>
 </head>
@@ -308,28 +354,19 @@
 <body>
 
     <header class="header">
-        <div class="brand-logo" style="margin-right: 2px;">
-    <div class="logo-wrapper">
-        <img src="{{ asset('images/logo digital parent.png') }}"
-             alt="Logo Digital Parent">
-    </div>
-            <div class="brand-text">
-                <h1>DIGITAL PARENT</h1>
-                <span>Sistem Monitoring Siswa Terpadu</span>
-                <div style="margin-top:8px;">
-                    {{-- Background diubah menjadi warna utama --}}
-                    <div
-                        style="display:flex; align-items:center; gap:12px; background:var(--primary); padding:8px 12px; border-radius:10px; box-shadow:var(--shadow);">
-                        <div style="display:flex; flex-direction:column; line-height:1;">
-                            {{-- Warna teks diubah menjadi white agar terbaca di background merah --}}
-                            <div style="font-size:13px; font-weight:700; color:white;">SMP Negeri 1 Menggala</div>
-                        </div>
-                        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-                            {{-- Badge disesuaikan: Background putih, Teks warna utama --}}
-                            <div
-                                style="background:white; color:var(--online); padding:6px 8px; border-radius:999px; font-size:11px; font-weight:700;">
-                                Online</div>
-                        </div>
+        <div class="header-left">
+            <div class="brand-logo">
+                <div class="logo-wrapper">
+                    <img src="{{ asset('images/logo digital parent.png') }}" alt="Logo Digital Parent">
+                </div>
+                
+                <div class="brand-text">
+                    <h1>DIGITAL PARENT</h1>
+                    <span class="subtitle">Sistem Monitoring Siswa Terpadu</span>
+                    
+                    <div class="school-pill">
+                        <span>SMP Negeri 1 Menggala</span>
+                        <div class="online-badge">Online</div>
                     </div>
                 </div>
             </div>
@@ -356,20 +393,20 @@
 
             try {
                 $grades = Grade::where('student_id', $student->id)
-    ->selectRaw('
-        subject as semester,
-        AVG(score) as avg_score,
-        /* ambil nama kelas: bagian setelah "Kelas " sebelum " Semester" */
-        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(subject, "Semester", 1), "Kelas", -1)) as class_name,
-        /* ambil angka semester: bagian setelah "Semester " */
-        CAST(TRIM(SUBSTRING_INDEX(subject, "Semester ", -1)) AS UNSIGNED) as semester_num
-    ')
-    ->groupBy('semester', 'class_name', 'semester_num')
-    ->orderByRaw('
-        FIELD(class_name, "VII", "VIII", "IX") ASC,
-        semester_num ASC
-    ')
-    ->get();
+                    ->selectRaw('
+                        subject as semester,
+                        AVG(score) as avg_score,
+                        /* ambil nama kelas: bagian setelah "Kelas " sebelum " Semester" */
+                        TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(subject, "Semester", 1), "Kelas", -1)) as class_name,
+                        /* ambil angka semester: bagian setelah "Semester " */
+                        CAST(TRIM(SUBSTRING_INDEX(subject, "Semester ", -1)) AS UNSIGNED) as semester_num
+                    ')
+                    ->groupBy('semester', 'class_name', 'semester_num')
+                    ->orderByRaw('
+                        FIELD(class_name, "VII", "VIII", "IX") ASC,
+                        semester_num ASC
+                    ')
+                    ->get();
 
 
                 if ($grades->isNotEmpty()) {
@@ -404,7 +441,7 @@
                                         ((isset($setting->start_year, $setting->end_year)
                                             ? $setting->start_year . '/' . $setting->end_year
                                             : null) ??
-                                            ($setting->year ?? null))));
+                                        ($setting->year ?? null))));
                         }
                     } catch (\Throwable $e) {
                         $academicYear = null;
@@ -543,9 +580,9 @@
                                 style="display: flex; justify-content: space-around; font-size: 11px; color: #4b5563; margin-top: 10px; font-weight: 500;">
                                 @foreach ($grades as $grade)
                                     <div style="width: 60px; text-align: center; line-height: 1.2;">
-                                     Kelas {{ $grade->class_name ?? '-' }}<br>
-                                     Semester {{ $grade->semester_num ?? '-' }}
-                                     </div>
+                                        Kelas {{ $grade->class_name ?? '-' }}<br>
+                                        Semester {{ $grade->semester_num ?? '-' }}
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
