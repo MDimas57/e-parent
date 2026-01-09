@@ -56,7 +56,7 @@
             display: flex;
             align-items: center;
             /* PERUBAHAN 1: Jarak diperkecil dari 16px ke 10px */
-            gap: 10px; 
+            gap: 10px;
         }
 
         .logo-wrapper {
@@ -98,13 +98,13 @@
             background-color: var(--primary);
             color: white;
             /* PERUBAHAN 2: Padding diperbesar agar kotak lebih besar */
-            padding: 6px 8px 6px 20px; 
+            padding: 6px 8px 6px 20px;
             border-radius: 50px;
             display: inline-flex;
             align-items: center;
             gap: 12px;
             /* PERUBAHAN 3: Font size diperbesar sedikit */
-            font-size: 15px; 
+            font-size: 15px;
             font-weight: 700;
             width: fit-content;
             box-shadow: 0 2px 5px rgba(245, 158, 11, 0.3);
@@ -119,7 +119,7 @@
             background: white;
             color: var(--online);
             /* PERUBAHAN 4: Badge Online juga diperbesar mengikuti induknya */
-            padding: 4px 12px; 
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 800;
@@ -359,11 +359,11 @@
                 <div class="logo-wrapper">
                     <img src="{{ asset('images/logo digital parent.png') }}" alt="Logo Digital Parent">
                 </div>
-                
+
                 <div class="brand-text">
                     <h1>DIGITAL PARENT</h1>
                     <span class="subtitle">Sistem Monitoring Siswa Terpadu</span>
-                    
+
                     <div class="school-pill">
                         <span>SMP Negeri 1 Menggala</span>
                         <div class="online-badge">Online</div>
@@ -458,15 +458,102 @@
                 <div class="icon-box">📝</div>
                 <div class="stat-info">
                     <div class="stat-label">Absensi Hari Ini</div>
+
                     @if ($todayAttendance)
-                        <div
-                            class="stat-value {{ $todayAttendance->status == 'Terlambat' ? 'text-danger' : 'text-success' }}">
-                            {{ $todayAttendance->status }}
+                        @php
+                            // Masuk (menggunakan field status & created_at)
+                            $masukStatus = $todayAttendance->status ?? null;
+                            $masukTime = $todayAttendance->created_at ?? null;
+
+                            // Pulang: periksa banyak kemungkinan nama kolom yang ditambahkan oleh migration pulang
+                            $pulangStatus = $todayAttendance->pulang_status
+                                ?? $todayAttendance->status_pulang
+                                ?? $todayAttendance->departure_status
+                                ?? $todayAttendance->status_out
+                                ?? null;
+
+                            $pulangTime = $todayAttendance->pulang_at
+                                ?? $todayAttendance->pulang_time
+                                ?? $todayAttendance->departure_time
+                                ?? $todayAttendance->left_at
+                                ?? $todayAttendance->jam_pulang
+                                ?? $todayAttendance->pulang_jam
+                                ?? $todayAttendance->time_out
+                                ?? null;
+
+                            // Jika pulangStatus kosong, jangan override dengan masuk status
+
+                            // Normalisasi status (jika tersimpan sebagai angka)
+                            if (is_int($pulangStatus) || ctype_digit(strval($pulangStatus))) {
+                                $intStatus = intval($pulangStatus);
+                                // contoh mapping: 1 = Pulang, 2 = Terlambat (ubah sesuai aplikasi jika berbeda)
+                                $pulangStatus = $intStatus === 2 ? 'Terlambat' : ($intStatus === 1 ? 'Pulang' : (string)$pulangStatus);
+                            }
+
+                            if (is_int($masukStatus) || ctype_digit(strval($masukStatus))) {
+                                $intStatus = intval($masukStatus);
+                                $masukStatus = $intStatus === 2 ? 'Terlambat' : ($intStatus === 1 ? 'Hadir' : (string)$masukStatus);
+                            }
+
+                            // Format waktu dengan aman
+                            $masukTimeFormatted = null;
+                            if ($masukTime) {
+                                try {
+                                    if ($masukTime instanceof \Carbon\Carbon || $masukTime instanceof \DateTime) {
+                                        $masukTimeFormatted = $masukTime->format('H:i');
+                                    } else {
+                                        $masukTimeFormatted = \Carbon\Carbon::parse($masukTime)->format('H:i');
+                                    }
+                                } catch (\Throwable $e) {
+                                    $masukTimeFormatted = null;
+                                }
+                            }
+
+                            $pulangTimeFormatted = null;
+                            if ($pulangTime) {
+                                try {
+                                    if ($pulangTime instanceof \Carbon\Carbon || $pulangTime instanceof \DateTime) {
+                                        $pulangTimeFormatted = $pulangTime->format('H:i');
+                                    } else {
+                                        $pulangTimeFormatted = \Carbon\Carbon::parse($pulangTime)->format('H:i');
+                                    }
+                                } catch (\Throwable $e) {
+                                    $pulangTimeFormatted = null;
+                                }
+                            }
+                        @endphp
+
+                        <div style="text-align: right;">
+                            {{-- Masuk --}}
+                            <div style="font-size:12px; color:var(--text-gray);">Masuk</div>
+                            @if ($masukStatus)
+                                <div class="stat-value {{ strtolower($masukStatus) === 'terlambat' ? 'text-danger' : 'text-success' }}">
+                                    {{ $masukStatus }}
+                                </div>
+                                <div class="stat-sub">Jam: {{ $masukTimeFormatted ?? '-' }}</div>
+                            @else
+                                <div class="stat-value" style="color: #9ca3af;">Belum Absen Masuk</div>
+                                <div class="stat-sub">Menunggu Scan...</div>
+                            @endif
+
+                            {{-- Pulang (spasi kecil untuk keterbacaan) --}}
+                            <div style="height:8px"></div>
+                            <div style="font-size:12px; color:var(--text-gray);">Pulang</div>
+                            @if ($pulangStatus)
+                                <div class="stat-value {{ strtolower($pulangStatus) === 'terlambat' ? 'text-danger' : 'text-success' }}">
+                                    {{ $pulangStatus }}
+                                </div>
+                                <div class="stat-sub">Jam: {{ $pulangTimeFormatted ?? '-' }}</div>
+                            @else
+                                <div class="stat-value" style="color: #9ca3af;">Belum Absen Pulang</div>
+                                <div class="stat-sub">Menunggu Scan...</div>
+                            @endif
                         </div>
-                        <div class="stat-sub">Jam: {{ $todayAttendance->created_at->format('H:i') }}</div>
                     @else
-                        <div class="stat-value" style="color: #9ca3af;">Belum Absen</div>
-                        <div class="stat-sub">Menunggu Scan...</div>
+                        <div style="text-align: right;">
+                            <div class="stat-value" style="color: #9ca3af;">Belum Absen</div>
+                            <div class="stat-sub">Menunggu Scan...</div>
+                        </div>
                     @endif
                 </div>
             </div>
