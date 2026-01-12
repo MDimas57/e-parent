@@ -32,7 +32,9 @@ class AdminPanelProvider extends PanelProvider
             // --- 2. TAMBAHKAN BARIS INI UNTUK MENGAKTIFKAN PROFILE ---
             ->profile(EditProfile::class) 
             // ---------------------------------------------------------
-
+            ->brandLogo(fn () => view('filament.admin.logo')) 
+            ->brandLogoHeight('5rem')
+            
             ->brandName(fn () => auth()->user()?->role === 'parent' ? 'Dashboard Orang Tua' : 'Digital Parent Admin')
             ->colors([
                 'primary' => Color::Amber,
