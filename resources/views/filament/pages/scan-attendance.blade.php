@@ -114,7 +114,7 @@
 
             @if($is_modal_open)
                 <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-bounce-in">
+                    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-bounce-in">
                         <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-4 shadow-md {{ $scanned_data['color'] }}">
                             @if($scanned_data['status'] == 'success')
                                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,18 +127,17 @@
                             @endif
                         </div>
 
-                        <h3 class="text-2xl font-bold text-gray-900">{{ $scanned_data['title'] }}</h3>
-
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $scanned_data['title'] }}</h3>
                         @if(isset($scanned_data['name']))
-                            <div class="mt-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                                <p class="text-xs text-gray-500 uppercase">Nama Siswa</p>
-                                <p class="text-xl font-bold text-primary-700">{{ $scanned_data['name'] }}</p>
-                                <p class="text-sm text-gray-600 mt-1">{{ $scanned_data['class'] }}</p>
-                                <p class="text-xs text-gray-400 mt-2">{{ $scanned_data['time'] }}</p>
+                            <div class="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-100 dark:border-gray-600">
+                                <p class="text-xs text-gray-500 dark:text-gray-300 uppercase">Nama Siswa</p>
+                                <p class="text-xl font-bold text-primary-700 dark:text-primary-400">{{ $scanned_data['name'] }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ $scanned_data['class'] }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-400 mt-2">{{ $scanned_data['time'] }}</p>
                             </div>
                         @endif
 
-                        <p class="mt-4 text-gray-600 text-sm">{{ $scanned_data['message'] }}</p>
+                        <p class="mt-4 text-gray-600 dark:text-gray-300 text-sm">{{ $scanned_data['message'] }}</p>
                     </div>
                 </div>
             @endif
@@ -149,7 +148,11 @@
                         type="text"
                         wire:model="nisn_input"
                         placeholder="Input NISN Manual..."
-                        class="block w-full pl-4 pr-3 py-2 border border-gray-300 rounded-lg text-center shadow-sm"
+                        class="block w-full pl-4 pr-3 py-2 border border-gray-300 dark:border-gray-600 
+                            rounded-lg text-center shadow-sm
+                            bg-white dark:bg-gray-800
+                            text-gray-900 dark:text-gray-100
+                            placeholder-gray-400 dark:placeholder-gray-400"
                     />
                 </form>
             </div>

@@ -22,6 +22,9 @@ class AttendanceTable
     public static function make(Table $table): Table
     {
         return $table
+        ->modifyQueryUsing(function (Builder $query) {
+                $query->whereDate('date', now());
+            })
             ->columns([
                 TextColumn::make('student.name')
                     ->label('Siswa')
@@ -51,6 +54,15 @@ class AttendanceTable
                         'Alpha' => 'danger',       // Merah
                         default => 'gray',
                     }),
+                TextColumn::make('status_pulang')
+                    ->label('Status Pulang')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'Pulang' => 'success',        // Hijau
+                        null, '' => 'gray',           // Belum pulang
+                        default => 'warning',
+                    }),
+
             ])
             ->filters([
                 SelectFilter::make('school_class_id')

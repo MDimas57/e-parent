@@ -13,6 +13,8 @@ class ScanAttendancePulang extends Page
     protected static ?string $navigationLabel = 'Scan Absensi Pulang';
     protected static ?string $navigationGroup = 'Absensi & Laporan';
     protected static string $view = 'filament.pages.scan-attendance-pulang';
+    protected static ?string $title = 'Scan Absensi Pulang';
+
 
     public $nisn_input = '';
     public $is_modal_open = false;
@@ -39,7 +41,7 @@ class ScanAttendancePulang extends Page
                 'error',
                 'Gagal',
                 "NISN {$nisn} tidak ditemukan.",
-                'bg-red-100 text-red-800'
+                'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300'
             );
             return;
         }
@@ -54,7 +56,7 @@ class ScanAttendancePulang extends Page
                 'warning',
                 'Belum Absen Masuk',
                 'Siswa belum melakukan absensi masuk hari ini.',
-                'bg-yellow-100 text-yellow-800',
+                'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300',
                 $student
             );
             return;
@@ -65,7 +67,7 @@ class ScanAttendancePulang extends Page
                 'warning',
                 'Sudah Absen Pulang',
                 'Siswa ini sudah melakukan absensi pulang.',
-                'bg-yellow-100 text-yellow-800',
+                'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300',
                 $student
             );
             return;
@@ -81,7 +83,7 @@ class ScanAttendancePulang extends Page
             'success',
             'Berhasil Pulang',
             'Absensi pulang berhasil dicatat.',
-            'bg-green-100 text-green-800',
+            'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300',
             $student
         );
     }

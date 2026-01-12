@@ -92,7 +92,8 @@
 
   @if($is_modal_open)
 <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-bounce-in">
+    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+            rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center animate-bounce-in">
 
         <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-4 shadow-md {{ $scanned_data['color'] }}">
             @if($scanned_data['status'] == 'success')
@@ -111,26 +112,26 @@
             @endif
         </div>
 
-        <h3 class="text-2xl font-bold text-gray-900">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {{ $scanned_data['title'] }}
         </h3>
 
         @if($scanned_data['name'])
-        <div class="mt-4 bg-gray-50 rounded-xl p-4 border">
-            <p class="text-xs text-gray-500 uppercase">Nama Siswa</p>
-            <p class="text-xl font-bold text-primary-700">
+        <div class="mt-4 bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border dark:border-gray-600">
+            <p class="text-xs text-gray-500 dark:text-gray-300 uppercase">Nama Siswa</p>
+            <p class="text-xl font-bold text-primary-700 dark:text-primary-400">
                 {{ $scanned_data['name'] }}
             </p>
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
                 {{ $scanned_data['class'] }}
             </p>
-            <p class="text-xs text-gray-400 mt-2">
+            <p class="text-xs text-gray-400 dark:text-gray-400 mt-2">
                 {{ $scanned_data['time'] }}
             </p>
         </div>
         @endif
 
-        <p class="mt-4 text-sm text-gray-600">
+        <p class="mt-4 text-sm text-gray-600 dark:text-gray-300">
             {{ $scanned_data['message'] }}
         </p>
 

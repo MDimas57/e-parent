@@ -14,6 +14,8 @@ class ScanAttendance extends Page
     protected static ?string $navigationLabel = 'Scan Absensi';
     protected static ?string $navigationGroup = 'Absensi & Laporan';
     protected static string $view = 'filament.pages.scan-attendance';
+    protected static ?string $title = 'Scan Absensi Masuk';
+
 
     public $nisn_input = '';
     
