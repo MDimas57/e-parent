@@ -15,7 +15,7 @@ class StudentForm
         return $form
             ->schema([
                 TextInput::make('nisn')
-                    ->label('NISN')
+                    ->label('NIS')
                     ->required()
                     ->numeric()
                     // --- VALIDASI UNIK ---

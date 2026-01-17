@@ -16,7 +16,7 @@ class StudentsTable
         return $table
             ->columns([
                 TextColumn::make('nisn')
-                    ->label('NISN')
+                    ->label('NIS')
                     ->searchable()
                     ->sortable(),
 

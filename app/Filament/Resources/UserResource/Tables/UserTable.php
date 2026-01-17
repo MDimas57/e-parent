@@ -40,7 +40,12 @@ class UserTable
             ])
             ->actions([
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()
+                ->before(fn ($record) =>
+                    \DB::table('messages')
+                        ->where('receiver_id', $record->id)
+                        ->delete()
+        ),
             ]);
     }
 }
