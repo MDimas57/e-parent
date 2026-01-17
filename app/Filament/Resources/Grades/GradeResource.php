@@ -58,6 +58,7 @@ class GradeResource extends Resource
             'index' => ListGrades::route('/'),
             'create' => CreateGrade::route('/create'),
             'edit' => EditGrade::route('/{record}/edit'),
+
             
             // --- RUTE BARU: HALAMAN KELOLA NILAI ---
             // {record} akan membawa ID nilai untuk mengidentifikasi siswa

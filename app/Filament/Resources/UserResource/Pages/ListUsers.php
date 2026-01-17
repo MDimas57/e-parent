@@ -35,7 +35,6 @@ class ListUsers extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Semua User'),
             
             'admin' => Tab::make('Admin')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('role', 'admin'))
